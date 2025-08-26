@@ -1,0 +1,19 @@
+{
+  "name": "Tư vấn tuyển sinh HSU",
+  "short_name": "HSU Chat",
+  "description": "Chatbot tư vấn tuyển sinh Đại học Hoa Sen",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1e3c72",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://hoasen.edu.vn/wp-content/uploads/2023/03/logo-hsu-1.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "lang": "vi"
+}

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tư vấn tuyển sinh - Đại học Hoa Sen</title>
+    <meta name="description" content="Chatbot tư vấn tuyển sinh Đại học Hoa Sen - Hỗ trợ 24/7">
+    <meta name="theme-color" content="#1e3c72">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+    <main id="chat-container" class="chat-container" role="main" aria-label="Giao diện trò chuyện tư vấn tuyển sinh">
+        <header class="chat-header" role="banner">
+            <div class="header-content">
+                <img src="https://hoasen.edu.vn/wp-content/uploads/2023/03/logo-hsu-1.png" alt="Logo Đại học Hoa Sen" class="logo">
+                <div class="header-text">
+                    <h1 id="chat-title">Tư vấn tuyển sinh HSU</h1>
+                    <p id="chat-subtitle">Chatbot hỗ trợ 24/7</p>
+                </div>
+            </div>
+        </header>
+        
+        <section 
+            id="messages-container" 
+            class="messages-container"
+            role="log"
+            aria-live="polite"
+            aria-label="Lịch sử cuộc trò chuyện"
+            aria-describedby="chat-title"
+        >
+            <!-- Messages will be dynamically added here -->
+        </section>
+        
+        <div 
+            id="typing-indicator" 
+            class="typing-indicator" 
+            style="display: none;"
+            role="status"
+            aria-live="polite"
+            aria-label="Chatbot đang soạn tin nhắn"
+        >
+            <div class="typing-dots" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <span class="typing-text">Đang soạn tin...</span>
+        </div>
+        
+        <nav 
+            id="quick-replies" 
+            class="quick-replies-container" 
+            style="display: none;"
+            role="navigation"
+            aria-label="Các lựa chọn trả lời nhanh"
+        >
+            <!-- Quick reply buttons will be added here -->
+        </nav>
+        
+        <section class="input-area" role="region" aria-label="Khu vực nhập tin nhắn">
+            <form class="input-wrapper" role="form" aria-label="Gửi tin nhắn">
+                <label for="message-input" class="sr-only">Nhập tin nhắn của bạn</label>
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    placeholder="Nhập tin nhắn của bạn..." 
+                    maxlength="500"
+                    aria-label="Nhập tin nhắn của bạn"
+                    aria-describedby="input-help"
+                    autocomplete="off"
+                    spellcheck="true"
+                >
+                <div id="input-help" class="sr-only">Nhập tin nhắn và nhấn Enter hoặc nút gửi để gửi</div>
+                <button 
+                    id="send-button" 
+                    class="send-button" 
+                    type="submit"
+                    aria-label="Gửi tin nhắn"
+                    aria-describedby="send-help"
+                    disabled
+                >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+                    </svg>
+                    <span class="sr-only">Gửi</span>
+                </button>
+                <div id="send-help" class="sr-only">Gửi tin nhắn đã nhập</div>
+            </form>
+        </section>
+        
+        <!-- Live region for announcements -->
+        <div id="announcements" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+        
+        <!-- Skip link for keyboard navigation -->
+        <a href="#message-input" class="skip-link">Chuyển đến ô nhập tin nhắn</a>
+    </main>
+    
+    <script src="phoneValidation.js"></script>
+    <script src="chat.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: hsu-chatbot-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: hsu-chatbot
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - hsu-network
+
+  app:
+    build: .
+    container_name: hsu-chatbot-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      MONGODB_URI: mongodb://hsu_user:hsu_password@mongodb:27017/hsu-chatbot
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      SESSION_SECRET: ${SESSION_SECRET}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+    depends_on:
+      - mongodb
+    networks:
+      - hsu-network
+    volumes:
+      - ./logs:/app/logs
+
+volumes:
+  mongodb_data:
+
+networks:
+  hsu-network:
+    driver: bridge
