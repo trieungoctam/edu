@@ -194,8 +194,17 @@ class ChatInterface {
             
             this.hideTyping();
             
-            // Add bot response
-            this.addMessage('assistant', data.reply);
+            // Add bot response (support multiple replies)
+            if (Array.isArray(data.replies) && data.replies.length > 0) {
+                data.replies.forEach((r, idx) => {
+                    this.addMessage('assistant', r);
+                });
+            } else if (data.reply) {
+                this.addMessage('assistant', data.reply);
+            } else if (data.message) {
+                // backward compatibility
+                this.addMessage('assistant', data.message);
+            }
             
             // Update current state
             if (data.nextState) {
@@ -203,7 +212,7 @@ class ChatInterface {
                 this.updateInputAreaForState(data.nextState);
             }
             
-            // Show quick replies if available
+            // Show quick replies if available (attach to last assistant message visually)
             if (data.quickReplies && data.quickReplies.length > 0) {
                 this.showQuickReplies(data.quickReplies);
             }

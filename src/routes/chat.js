@@ -62,6 +62,7 @@ router.post('/message', ensureSessionId, validator.validateMessageRequest, Error
     
     let botResponse;
     let quickReplies = [];
+    let replies = [];
     let nextState = session.currentState;
     
     if (!flowResult.success) {
@@ -110,6 +111,27 @@ router.post('/message', ensureSessionId, validator.validateMessageRequest, Error
         }
         quickReplies = conversationFlow.getQuickReplies(nextState);
       }
+
+      // Split long response into two consecutive messages when advising about majors or when text is long
+      const splitByParagraph = (text) => {
+        const parts = text.split(/\n\n+/).map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 2) {
+          return [parts[0], parts.slice(1).join('\n\n')];
+        }
+        return [text];
+      };
+
+      const MAX_LEN = 300;
+      const ensureTwoParts = (text) => {
+        const parts = splitByParagraph(text);
+        if (parts.length === 1 && text.length > MAX_LEN) {
+          return [text.slice(0, MAX_LEN).trim(), text.slice(MAX_LEN).trim()];
+        }
+        return parts;
+      };
+
+      const parts = ensureTwoParts(botResponse).slice(0, 2);
+      replies = parts;
     }
     
     // Update session state if it changed
@@ -117,8 +139,15 @@ router.post('/message', ensureSessionId, validator.validateMessageRequest, Error
       await sessionManager.updateSessionState(sessionId, nextState);
     }
     
-    // Add bot response to conversation history
-    await sessionManager.addMessage(sessionId, 'assistant', botResponse, quickReplies);
+    // Add bot response(s) to conversation history
+    if (replies.length > 1) {
+      // First part without quick replies
+      await sessionManager.addMessage(sessionId, 'assistant', replies[0], []);
+      // Second part carries quick replies (if any)
+      await sessionManager.addMessage(sessionId, 'assistant', replies[1], quickReplies);
+    } else {
+      await sessionManager.addMessage(sessionId, 'assistant', (replies[0] || botResponse), quickReplies);
+    }
     
     // Check if conversation is complete
     const isComplete = conversationFlow.isConversationComplete(nextState);
@@ -158,7 +187,8 @@ router.post('/message', ensureSessionId, validator.validateMessageRequest, Error
 
     // Frontend expects flat response
     res.json({
-      reply: botResponse,
+      reply: (replies[replies.length - 1] || botResponse),
+      replies: replies,
       nextState: nextState,
       quickReplies
     });
