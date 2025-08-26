@@ -68,11 +68,11 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
       connectSrc: ["'self'"],
-      fontSrc: ["'self'"],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       objectSrc: ["'none'"],
       mediaSrc: ["'self'"],
       frameSrc: ["'none'"],
@@ -107,8 +107,15 @@ app.use(validator.sanitizeInputs);
 // Rate limiting
 app.use(limiter);
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, '../public')));
+// Serve static files from public directory, optionally under a base path
+const PUBLIC_BASE_PATH = process.env.PUBLIC_BASE_PATH || '/';
+const publicDir = path.join(__dirname, '../public');
+if (PUBLIC_BASE_PATH && PUBLIC_BASE_PATH !== '/') {
+  app.use(PUBLIC_BASE_PATH, express.static(publicDir));
+  console.log(`📦 Static assets served at base path: ${PUBLIC_BASE_PATH}`);
+} else {
+  app.use(express.static(publicDir));
+}
 
 // Health check endpoint
 app.get('/health', (req, res) => {
